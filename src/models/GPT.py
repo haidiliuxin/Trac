@@ -10,8 +10,11 @@ class GPT(Model):
         api_pos = int(config["api_key_info"]["api_key_use"])
         assert (0 <= api_pos < len(api_keys)), "Please enter a valid API key to use"
         self.max_output_tokens = int(config["params"]["max_output_tokens"])
-        self.client = OpenAI(api_key=api_keys[api_pos])
-        self.llama_tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+        
+        base_url = config.get("model_info", {}).get("base_url")
+        self.client = OpenAI(api_key=api_keys[api_pos], base_url=base_url)
+        # Use gpt2 tokenizer as fallback since we don't have access to llama3
+        self.llama_tokenizer = AutoTokenizer.from_pretrained("gpt2") 
         self.encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
         self.seed = 10
 

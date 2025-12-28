@@ -175,3 +175,7 @@ offload
 out/
 results/*
 !results/.gitkeep
+
+# Large data files
+data.zip
+datasets/LongBench/

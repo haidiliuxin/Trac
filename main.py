@@ -30,10 +30,11 @@ def parse_args():
                     help="Level of explanation granularity.")
     
     # General args
-    parser.add_argument('--model_name', type=str, default='llama3.1-8b', choices=['llama3.1-8b','chatglm4-9b','gpt4o', "gpt4o-mini"],
+    parser.add_argument('--model_name', type=str, default='llama3.1-8b', 
                         help="Name of the model to be used.")
     parser.add_argument("--dataset_name", type=str, default='musique',
-                        choices=['nq-poison', 'hotpotqa-poison', 'msmarco-poison', # RAG with knowledge corruption attack
+                        choices=['nq', 'hotpotqa', 'msmarco', # BEIR
+                                 'nq-poison', 'hotpotqa-poison', 'msmarco-poison', # RAG with knowledge corruption attack
                                  "narrativeqa", "musique", "qmsum", # Prompt injection attack to LongBench datasets, please set '--prompt_injection_attack'.
                                  'srt', 'mrt'], # Needle-in-haystack datasets
                         help="Name of the dataset to be used.")
@@ -134,6 +135,16 @@ def main(args):
     elif args.dataset_name in ['srt','mrt']:
         benchmark = 'needle-in-haystack'
     else: raise KeyError(f"Please use supported datasets")
+    
+    # Try to load custom config if model name not in standard list
+    try:
+        if args.model_name not in ['llama3.1-8b','chatglm4-9b','gpt4o', "gpt4o-mini"]:
+             llm = create_model(config_path = f'model_configs/{args.model_name}_config.json', device = f"cuda:{args.gpu_id}")
+        else:
+             llm = create_model(config_path = f'model_configs/{args.model_name}_config.json', device = f"cuda:{args.gpu_id}")
+    except Exception as e:
+        print(f"Warning: Could not create model immediately (might be created later in loop or handled differently): {e}")
+
     results_path = args.results_path
     
     # Load dataset and random select
@@ -142,6 +153,7 @@ def main(args):
                            model_name=args.model_name, shot=1, seed=args.seed,num_poison = args.inject_times, context_length = args.context_length)
     # Load LLM and init Attribution
     print("Loading LLM!")
+    # Re-create model to ensure it is fresh/correct
     llm = create_model(config_path = f'model_configs/{args.model_name}_config.json', device = f"cuda:{args.gpu_id}")
     attr = create_attr(args, llm=llm)
     attr_results = []
@@ -155,8 +167,8 @@ def main(args):
     for idx, dp in enumerate(dataset):
         print(f"\n------------------Start question {idx} -------------------")
         
-        # Save results every 10 questions
-        if idx > 1 and idx % 10 == 0:
+        # Save results every 1 questions
+        if idx > -1:
             _save_results(args, attr_results, results_path)
 
         if benchmark == 'LongBench':

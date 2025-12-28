@@ -62,9 +62,9 @@ def evaluate_prompt_injection(args,llm):
         new_texts = remove_specific_indexes(all_texts, topk_ids)
         prompt = wrap_prompt(question, new_texts)
         try:
-            signal.alarm(60)
+            # signal.alarm(60)
             new_answer =llm.query(prompt)
-            signal.alarm(0)
+            # signal.alarm(0)
         except TimeoutError as exc:
             print("time out")
             ASV = 0
@@ -123,10 +123,10 @@ def evaluate_poison_rag(args,llm):
         precision, recall, f1 = calculate_precision_recall_f1( topk_ids,gt_ids)
 
         try:
-            signal.alarm(60)
+            # signal.alarm(60)
             new_answer =llm.query(prompt)
             ASV = int(clean_str(target_answer) in clean_str(new_answer))
-            signal.alarm(0)
+            # signal.alarm(0)
         except TimeoutError as exc:
             print("time out")
             ASV = 1
@@ -194,9 +194,9 @@ def evaluate_needle_in_haystack(args,llm):
 
         prompt = wrap_prompt(question, new_sentences)
         try:
-            signal.alarm(60)
+            # signal.alarm(60)
             new_answer =llm.query(prompt)
-            signal.alarm(0)
+            # signal.alarm(0)
         except TimeoutError as exc:
             print("time out")
             continue

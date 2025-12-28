@@ -36,7 +36,7 @@ def create_model(config_path = None, model_path = None, api_key = None, device =
         raise ValueError("ERROR: Either config_path or both model_name and api_key must be provided")
     
     name = config["model_info"]["name"].lower()
-    if 'gpt' in name:
+    if 'gpt' in name or 'deepseek' in name:
         model = GPT(config)
     elif 'llama' in name:
         model = Llama(config,device)

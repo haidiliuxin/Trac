@@ -1,6 +1,7 @@
 '''
     Easily process & load LongBench, PoisonedRAG and NeedleInHaystack datasets.
 '''
+import os
 from src.utils import load_json
 from datasets import load_dataset
 import random
@@ -59,7 +60,13 @@ def _load_dataset(dataset_name='nq-poison', retriever='contriever', retrieval_k=
     print("Load dataset: ",dataset_name)
     if dataset_name in ["narrativeqa","musique","qmsum"]:
         print("datset_name: ",dataset_name)
-        dataset = load_dataset('THUDM/LongBench', dataset_name, split='test')
+        # Try loading from local path first
+        local_path = os.path.join(os.getcwd(), "datasets", "LongBench", "data")
+        if os.path.exists(local_path):
+             print(f"Loading from local path: {local_path}")
+             dataset = load_dataset("json", data_files={"test": os.path.join(local_path, f"{dataset_name}.jsonl")}, split="test")
+        else:
+             dataset = load_dataset('THUDM/LongBench', dataset_name, split='test', trust_remote_code=True)
     elif dataset_name in ['nq-poison', 'hotpotqa-poison', 'msmarco-poison']:
         dataset = load_poison(dataset_name, retriever, retrieval_k)
     elif dataset_name in ['srt','mrt']:

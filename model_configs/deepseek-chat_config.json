@@ -1,0 +1,17 @@
+{ 
+    "model_info":{
+        "provider":"deepseek",
+        "name":"deepseek-chat",
+        "base_url": "https://api.deepseek.com"
+    },
+    "api_key_info":{
+        "api_keys":[
+            "sk-90f98bc3df2a4a3c91a7a014e84a1a38"
+        ],
+        "api_key_use": 0
+    },
+    "params":{
+        "temperature":0.001,
+        "max_output_tokens":100
+    }
+}

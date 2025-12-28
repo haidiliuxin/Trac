@@ -14,7 +14,7 @@ class PerturbationBasedAttribution(Attribution):
         self.attr_type = attr_type
         self.score_funcs = score_funcs
         self.beta = beta
-        if "gpt" not in self.llm.name:
+        if "gpt" not in self.llm.name and "deepseek" not in self.llm.name:
             self.model = llm.model
             self.tokenizer = llm.tokenizer
 

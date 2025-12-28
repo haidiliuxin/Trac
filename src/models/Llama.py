@@ -7,7 +7,7 @@ import signal
 
 def handle_timeout(sig, frame):
     raise TimeoutError('took too long')
-signal.signal(signal.SIGALRM, handle_timeout)
+# signal.signal(signal.SIGALRM, handle_timeout)
 
 class Llama(Model):
     def __init__(self, config, device = "cuda:0"):

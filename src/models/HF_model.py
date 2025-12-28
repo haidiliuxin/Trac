@@ -8,12 +8,21 @@ class HF_model(Model):
 
         api_pos = int(config["api_key_info"]["api_key_use"])
         hf_token = config["api_key_info"]["api_keys"][api_pos]
-        self.tokenizer = AutoTokenizer.from_pretrained(self.name, use_auth_token=hf_token, trust_remote_code=True)
+        if not hf_token:
+            hf_token = None
+        
+        self.tokenizer = AutoTokenizer.from_pretrained(self.name, token=hf_token, trust_remote_code=True)
+        
+        dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float16
+        if not torch.cuda.is_available():
+            dtype = torch.float32
+            device = "cpu"
+
         self.model = AutoModelForCausalLM.from_pretrained(
             self.name,
-            torch_dtype=torch.bfloat16,
+            torch_dtype=dtype,
             device_map=device,
-            use_auth_token=hf_token,
+            token=hf_token,
             trust_remote_code=True
         )
 

@@ -15,7 +15,7 @@ class Attribution:
         pass
             
     def context_value(self, question:str, contexts:list, answer:str) -> float:
-        if "gpt" in self.llm.name: # use BLEU score for black-box models
+        if "gpt" in self.llm.name or "deepseek" in self.llm.name: # use BLEU score for black-box models
             prompt = wrap_prompt(question, contexts)
             new_answer =self.llm.query(prompt)
             reference_tokens = answer.split()
